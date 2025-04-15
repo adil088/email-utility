@@ -1,17 +1,18 @@
 package com.email_app.email_app.utility;
 
-import java.io.File;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import jakarta.activation.DataSource;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.util.ByteArrayDataSource;
 
 @Service
 public class MailUtility {
@@ -43,10 +44,11 @@ public class MailUtility {
         mimeMessageHelper.setText(htmlEmail, true);
 
         // Attach a file from a specific location
-        File file = new File("src/main/resources/static/Mohd_Adil_Resume_.pdf"); // replace with your file path
+        ClassPathResource file = new ClassPathResource("static/Mohd_Adil_Resume_.pdf");
+        DataSource source = new ByteArrayDataSource(file.getInputStream(), "application/pdf");
         if (file.exists()) {
             logger.info("Uploading resume....");
-            mimeMessageHelper.addAttachment(file.getName(), file);
+            mimeMessageHelper.addAttachment(file.getFilename(), source);
         } else {
             logger.error("File not found at the specified location");
             logger.info("Uploading failed....");
