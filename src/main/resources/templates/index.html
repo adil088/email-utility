@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Email Utility</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 40px;
+        background-color: #f4f4f4;
+      }
+      form {
+        background-color: #fff;
+        padding: 25px;
+        border-radius: 10px;
+        max-width: 400px;
+        margin: auto;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      label {
+        display: block;
+        margin-top: 15px;
+        font-weight: bold;
+      }
+      input[type="text"],
+      input[type="email"] {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+      input[type="checkbox"] {
+        margin-top: 15px;
+      }
+      button {
+        margin-top: 20px;
+        background-color: #007bff;
+        color: white;
+        padding: 10px;
+        width: 100%;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <form>
+      <h1 th:text="${message}" style="text-align: center">Message</h1>
+
+      <label for="email">HR Email:</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        placeholder="Enter HR email"
+        required
+      />
+
+      <label for="hrName">HR Name:</label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        placeholder="Enter HR name"
+        required
+      />
+
+      <label for="company">Company Name:</label>
+      <input
+        type="text"
+        id="companyName"
+        name="companyName"
+        placeholder="Enter company name"
+        required
+      />
+
+      <label>
+        <input type="checkbox" id="isImmediate" name="isImmediate" /> Available
+        for Immediate Joining
+      </label>
+
+      <button type="button" onclick="submitForm()">Send</button>
+    </form>
+
+    <script>
+      function submitForm() {
+        const email = document.getElementById("email").value;
+        const name = document.getElementById("name").value;
+        const companyName = document.getElementById("companyName").value;
+        const isImmediate = document.getElementById("isImmediate").checked;
+
+        const url = `http://localhost:9090/email-app/send?email=${email}&name=${name}&companyName=${companyName}&isImmediate=${isImmediate}`;
+
+        fetch(url, {
+          method: "PUT",
+        })
+          .then((response) => {
+            if (response.ok) {
+              alert("Email sent successfully!");
+            } else {
+              alert("Error sending email.");
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+            alert("Error sending email.");
+          });
+      }
+    </script>
+  </body>
+</html>
