@@ -46,6 +46,12 @@
       button:hover {
         background-color: #0056b3;
       }
+      button:disabled {
+        background-color: #0056b3;
+        color: #ffffff;
+        cursor: not-allowed;
+}
+
     </style>
   </head>
   <body>
@@ -84,7 +90,13 @@
         for Immediate Joining
       </label>
 
-      <button type="button" onclick="submitForm()">Send</button>
+      <button type="button" id="submit-btn" onclick="submitForm()">Send</button>
+      <a href="/v2/email-app/applications"><button type="button">View Applications</button></a>
+      <br>
+      <span style="text-align: center;">
+      <p style="font-size: 12px; color: grey; padding-top: 20px; margin: 0;">by Aadil</p>
+      <p style="font-size: 12px; color: grey; padding: 0; margin: 0;">v2.0</p>
+      </span>
     </form>
 
     <script>
@@ -94,7 +106,12 @@
         const companyName = document.getElementById("companyName").value;
         const isImmediate = document.getElementById("isImmediate").checked;
 
-        const url = `http://localhost:9090/email-app/send?email=${email}&name=${name}&companyName=${companyName}&isImmediate=${isImmediate}`;
+        const button = document.getElementById("submit-btn");
+        button.innerText = "Sending...";
+        button.disabled = true;
+
+
+        const url = `http://localhost:9090/v2/backend/email-app/send?email=${email}&name=${name}&companyName=${companyName}&isImmediate=${isImmediate}`;
 
         fetch(url, {
           method: "PUT",
@@ -105,6 +122,8 @@
             } else {
               alert("Error sending email.");
             }
+            button.innerText = "Send";
+            button.disabled = false;
           })
           .catch((error) => {
             console.error(error);
