@@ -72,7 +72,6 @@
 
 	<build>
 		<finalName>email-utility</finalName>
-		<outputDirectory>D:/Coding/email-app-DB-integration</outputDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
