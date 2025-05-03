@@ -34,7 +34,7 @@ public class DetailsController {
         boolean isImmediateBool = Boolean.parseBoolean(isImmediate);
 
         try {
-            logger.info("trying to send email to HR");
+            logger.info("Sending email to HR");
             detailsService.sendHRMail(email, name, companyName, isImmediateBool);
             return new ResponseEntity<>("Mail sent successfully", HttpStatus.OK);
         } catch (Exception e) {
