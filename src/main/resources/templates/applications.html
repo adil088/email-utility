@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>View Applications</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .content {
+            flex-grow: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .table-container {
+            background-color: #1e1e1e;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 600px;
+        }
+
+        th, td {
+            padding: 14px 18px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #e9eef6;
+            color: #34495e;
+            font-weight: 600;
+            border-bottom: 2px solid #dcdfe6;
+        }
+
+        td {
+            border-bottom: 1px solid #ecf0f1;
+        }
+        .footer-note {
+            font-size: 12px;
+            color: #e0e0e0;
+            text-align: center;
+            margin-top: 30px;
+            padding: 10px;
+            background-color: #121212;
+            border-top: 1px solid #ddd;
+        }
+
+        .home-button {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .home-button:hover {
+            background-color: #0056b3;
+        }
+
+        .delete-btn {
+            background-color: #ff0000;
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background-color: #b30000;
+        }
+
+        .pagination-container {
+            padding: 20px;
+            text-align: center;
+        }
+
+        #prev-page, #next-page {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+
+        #prev-page:hover, #next-page:hover {
+            background-color: #0056b3;
+        }
+
+        #page-info {
+            margin: 0 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>View Applications</h1>
+        <div class="table-container">
+            <table id="emailDetailsTable">
+                <thead>
+                    <tr>
+                        <th>Sr. No.</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Company Name</th>
+                        <th>Immediate Joiner</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Table rows will be injected here by JS -->
+                </tbody>
+            </table>
+        </div>
+                <div class="pagination-container"></div>
+
+        <a href="/v2/email-app/home" class="home-button">Go to Home</a>
+    </div>
+
+    <div class="footer-note">
+        <p>by Aadil</p>
+        <p>v3.0</p>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let pageSize = 20;
+        let totalPages = 1; // declare totalPages here
+
+        function loadPage(page) {
+            fetch(`http://localhost:9090/v2/backend/email-app/getAllDetails?page=${page - 1}&size=${pageSize}`)
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.querySelector('#emailDetailsTable tbody');
+                    tbody.innerHTML = '';
+                    data.content.forEach((app, index) => {
+                        const tr = document.createElement('tr');
+
+                        tr.innerHTML = `
+                            <td>${(page - 1) * pageSize + index + 1}</td>
+                            <td>${app.name}</td>
+                            <td>${app.email}</td>
+                            <td>${app.companyName}</td>
+                            <td>${app.immediate ? 'Yes' : 'No'}</td>
+                            <td><button class="delete-btn" onclick="deleteApplication(${app.id}, this.parentElement.parentElement)">Delete</button></td>
+                        `;
+
+                        tbody.appendChild(tr);
+                    });
+                    updatePagination(data.page.totalPages, page);
+                    console.log(data);
+                })
+                .catch(error => {
+                    console.error('Failed to load application data:', error);
+                    const tbody = document.querySelector('#emailDetailsTable tbody');
+                    tbody.innerHTML = `<tr><td colspan="6" style="color: red;">Error loading data</td></tr>`;
+                });
+        }
+
+         function updatePagination(pages, currentPage) {
+    totalPages = pages; // update totalPages here
+    const paginationContainer = document.querySelector('.pagination-container');
+    paginationContainer.innerHTML = `
+        <button id="prev-page" onclick="prevPage()">Previous</button>
+        <span id="page-info">Page ${currentPage} of ${totalPages}</span>
+        <button id="next-page" onclick="nextPage()">Next</button>
+    `;
+    document.querySelector('#prev-page').disabled = currentPage === 1;
+    document.querySelector('#next-page').disabled = currentPage === totalPages;
+}
+
+         function prevPage() {
+             if (currentPage > 1) {
+                 currentPage--;
+                 loadPage(currentPage);
+             }
+         }
+
+
+function nextPage() {
+    if (currentPage < totalPages) {
+        currentPage++;
+        loadPage(currentPage);
+    }
+}
+
+         loadPage(currentPage);
+
+         function deleteApplication(id, rowElement) {
+             if (!confirm("Are you sure you want to delete this entry?")) return;
+
+             fetch(`http://localhost:9090/v2/backend/email-app/delete/${id}`, {
+                 method: 'DELETE'
+             })
+             .then(response => {
+                 if (response.ok) {
+                     rowElement.remove(); // Remove row from the table
+                     alert("Deleted successfully!");
+                     loadPage(currentPage); // reload the current page
+                 } else {
+                     alert("Failed to delete.");
+                 }
+             })
+             .catch(error => {
+                 console.error("Error during deletion:", error);
+                 alert("An error occurred while deleting.");
+             });
+         }
+    </script>
+</body>
+</html>
