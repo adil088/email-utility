@@ -36,10 +36,10 @@ public class DetailsService {
 
         if (isImmediate) {
             logger.info("Immediate joiner found");
-            mailutility.sendMail(email, name, "Application for Java developer - Immediate Joiner", companyName);
+            mailutility.sendMail(email, name, "Application for Java developer || Immediate Joiner", companyName);
             details.setImmediate(true);
         } else {
-            mailutility.sendMail(email, name, "Application for Java developer", companyName);
+            mailutility.sendMail(email, name, "Application for Java developer || Serving Notice Period", companyName);
             details.setImmediate(false);
         }
 
